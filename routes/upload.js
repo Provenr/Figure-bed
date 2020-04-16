@@ -19,43 +19,11 @@ var keys = [];
 //引入上传模块
 var { upload } = require('../utils/upload');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  let imgList = [];
-  let Unique = {};
-  obs.listObjects({
-    Bucket: 'provenr',
-    Prefix: 'test/'
-  }).then((result) => {
-    if(result.CommonMsg.Status < 300){
-      for(let j=0;j<result.InterfaceResult.Contents.length;j++){
-        let etag = result.InterfaceResult.Contents[j]['ETag'];
-        let key = result.InterfaceResult.Contents[j]['Key'];
-        if (!/.+\/$/.test(key)){
-          let img = {
-            Url: baseServer + result.InterfaceResult.Contents[j]['Key'],
-            Etag: etag
-          };
-          imgList.push(img);
-        } else {
-          Unique[etag] = 1;
-        }
-      }
-    }
-    res.render('index', { title: 'Express', list: imgList});
-  });
-
-
-  // 关闭obsClient
-  // obsClient.close();
-});
-
 router.use(bodyParser.json());//数据JSON类型
 router.use(bodyParser.urlencoded({ extended: false }));//解析post请求数据
 
 router.post('/upload', function(req, res, next) {
   var file = JSON.parse(req.body);
-  console.log(file);
   var fileName = file.filename;
 
   obs.putObject({
@@ -112,7 +80,7 @@ router.post('/uploads', function(req, res, next){
       });
   });
 
-  next()
+next()
 
 });
 
